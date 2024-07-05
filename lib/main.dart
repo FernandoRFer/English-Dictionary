@@ -1,6 +1,7 @@
 import 'package:english_dictionary/core/module_init.dart';
 import 'package:english_dictionary/core/router/navigator_observer.dart';
 import 'package:english_dictionary/core/router/routes.dart';
+import 'package:english_dictionary/core/theme/app_theme.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -47,7 +48,7 @@ class _AppWidgetState extends State<AppWidget> {
       debugShowMaterialGrid: false,
       navigatorKey: widget._navigatorKey,
       title: 'English Dictionary',
-      // theme: AppTheme.themeData,
+      theme: AppTheme.themeData,
       onGenerateRoute: AppRoutes.onGenerateRoutes,
       initialRoute: AppRoutes.initial,
       routes: AppRoutes.routes,

@@ -17,7 +17,7 @@ class BottomSheetHelper {
       enableDrag: enableDrag,
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(kGlobalShapeBorder),
+        borderRadius: BorderRadius.all(kGlobalBorderRadiusExternal),
       ),
       builder: ((context) {
         return SizedBox(

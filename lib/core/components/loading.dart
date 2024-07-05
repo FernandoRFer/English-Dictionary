@@ -22,7 +22,7 @@ class AnimatedLoading extends StatelessWidget {
             width: 350,
             child: LinearProgressIndicator(
               minHeight: 18,
-              borderRadius: BorderRadius.all(kGlobalBorderRadius),
+              borderRadius: BorderRadius.all(kGlobalBorderRadiusExternal),
             ),
             //   child: const Icon(
             //     Icons.settings,
