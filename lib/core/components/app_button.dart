@@ -1,3 +1,4 @@
+import 'package:english_dictionary/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class AppOutlinedButton extends StatelessWidget {
@@ -20,8 +21,8 @@ class AppOutlinedButton extends StatelessWidget {
           backgroundColor: WidgetStateProperty.all(
               Theme.of(context).bottomSheetTheme.backgroundColor),
           shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(32.0),
+            const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(kGlobalBorderRadiusInternal),
             ),
           )),
       onPressed: onPressed,
