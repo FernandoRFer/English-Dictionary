@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:english_dictionary/core/helpers/global_error.dart';
 import 'package:english_dictionary/core/navigator_app.dart';
+import 'package:english_dictionary/repository/local_db/favorites/favorites_db.dart.dart';
 import 'package:english_dictionary/repository/local_db/history/history_db.dart.dart';
 import 'package:english_dictionary/repository/local_db/history/history_model.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +11,10 @@ import 'package:rxdart/rxdart.dart';
 import '../../core/router/routes.dart';
 import '../view_state_entity.dart';
 
-class WordListModelState extends ViewStateEntity {
+class HomeModelState extends ViewStateEntity {
   List<String> words;
 
-  WordListModelState(
+  HomeModelState(
     super.state, {
     super.isLoading,
     this.words = const [],
@@ -22,16 +23,16 @@ class WordListModelState extends ViewStateEntity {
 
 abstract class IHomeBloc {
   ///Principal controller do Home page
-  Stream<WordListModelState> get onFetchingDataWordList;
-  Stream<WordListModelState> get onFetchingDataHistory;
-  Stream<WordListModelState> get onFetchingDataFavorites;
+  Stream<HomeModelState> get onFetchingDataWordList;
+  Stream<HomeModelState> get onFetchingDataHistory;
+  Stream<HomeModelState> get onFetchingDataFavorites;
   Future<void> load();
   Future<void> getWordList();
   Future<void> wordDetails(String value);
 
   Future<void> deleteItemHistory(String value);
+  Future<void> getFavorites();
 
-  void navigateHome();
   void navigatorPop();
   Future<void> dispose();
 }
@@ -41,16 +42,18 @@ class HomeBloc extends ChangeNotifier implements IHomeBloc {
   final INavigatorApp _navigatorApp;
 
   final IDbHistory _dbHistory;
+  final IDbFavorites _dbFavorites;
 
   HomeBloc(
     this._globalError,
     this._navigatorApp,
     this._dbHistory,
+    this._dbFavorites,
   );
 
-  final _controllerWordList = BehaviorSubject<WordListModelState>();
-  final _controllerHistory = BehaviorSubject<WordListModelState>();
-  final _controllerFavorites = BehaviorSubject<WordListModelState>();
+  final _controllerWordList = BehaviorSubject<HomeModelState>();
+  final _controllerHistory = BehaviorSubject<HomeModelState>();
+  final _controllerFavorites = BehaviorSubject<HomeModelState>();
 
   final List<String> _wordList = [];
 
@@ -67,14 +70,11 @@ class HomeBloc extends ChangeNotifier implements IHomeBloc {
     try {
       await getWordList();
       await getHistory();
+      await getFavorites();
     } catch (e) {
       final error = await _globalError.errorHandling(
-        "Um erro  ocorreu ao conectar, tente novamente",
-        e,
-      );
-      _controllerWordList.addError(
-        error.message,
-      );
+          "Um erro  ocorreu ao conectar, tente novamente", e);
+      _controllerWordList.addError(error.message);
     }
   }
 
@@ -82,24 +82,20 @@ class HomeBloc extends ChangeNotifier implements IHomeBloc {
   Future<void> wordDetails(String word) async {
     try {
       await _dbHistory.insert(HistoryModel(
-          searchWord: word, dateTime: DateTime.now().microsecondsSinceEpoch));
+          word: word, dateTime: DateTime.now().microsecondsSinceEpoch));
       await getHistory();
     } catch (e) {
       final error = await _globalError.errorHandling(
-        "Um erro  ocorreu ao conectar, tente novamente",
-        e,
-      );
-      _controllerWordList.addError(
-        error.message,
-      );
+          "Um erro  ocorreu ao conectar, tente novamente", e);
+      _controllerWordList.addError(error.message);
     }
   }
 
   @override
   Future<void> getWordList() async {
     try {
-      _controllerWordList.add(
-          WordListModelState("Loading", isLoading: true, words: _wordList));
+      _controllerWordList
+          .add(HomeModelState("Loading", isLoading: true, words: _wordList));
 
       if (_wordList.isEmpty) {
         final String jsonString =
@@ -111,43 +107,35 @@ class HomeBloc extends ChangeNotifier implements IHomeBloc {
         });
       }
       _controllerWordList
-          .add(WordListModelState("Done", isLoading: false, words: _wordList));
+          .add(HomeModelState("Done", isLoading: false, words: _wordList));
     } catch (e) {
       final error = await _globalError.errorHandling(
-        "Error when searching for available words",
-        e,
-      );
-      _controllerWordList.addError(
-        error.message,
-      );
+          "Error when searching for available words", e);
+      _controllerWordList.addError(error.message);
     }
   }
 
   Future<void> getHistory() async {
     try {
-      _controllerHistory.add(WordListModelState(
+      _controllerHistory.add(HomeModelState(
         "Loading",
         isLoading: true,
       ));
       final result = await _dbHistory.get();
 
       _controllerHistory
-          .add(WordListModelState("done", isLoading: false, words: result));
+          .add(HomeModelState("done", isLoading: false, words: result));
     } catch (e) {
       final error = await _globalError.errorHandling(
-        "Um erro  ocorreu ao conectar, tente novamente",
-        e,
-      );
-      _controllerHistory.addError(
-        error.message,
-      );
+          "Um erro  ocorreu ao conectar, tente novamente", e);
+      _controllerHistory.addError(error.message);
     }
   }
 
   @override
   Future<void> deleteItemHistory(String value) async {
     try {
-      _controllerHistory.add(WordListModelState(
+      _controllerHistory.add(HomeModelState(
         "Loading",
         isLoading: true,
       ));
@@ -155,19 +143,31 @@ class HomeBloc extends ChangeNotifier implements IHomeBloc {
       final result = await _dbHistory.get();
 
       _controllerHistory
-          .add(WordListModelState("done", isLoading: false, words: result));
+          .add(HomeModelState("done", isLoading: false, words: result));
     } catch (e) {
       final error = await _globalError.errorHandling(
-        "Um erro  ocorreu ao conectar, tente novamente",
-        e,
-      );
-      _controllerHistory.addError(
-        error.message,
-      );
+          "Um erro  ocorreu ao conectar, tente novamente", e);
+      _controllerHistory.addError(error.message);
     }
   }
 
-  void getFavorites(String word) {}
+  @override
+  Future<void> getFavorites() async {
+    try {
+      _controllerFavorites.add(HomeModelState(
+        "Loading",
+        isLoading: true,
+      ));
+      final result = await _dbFavorites.get();
+
+      _controllerFavorites
+          .add(HomeModelState("done", isLoading: false, words: result));
+    } catch (e) {
+      final error = await _globalError.errorHandling(
+          "Um erro  ocorreu ao conectar, tente novamente", e);
+      _controllerFavorites.addError(error.message);
+    }
+  }
 
   @override
   void navigatorPop() {
@@ -175,17 +175,11 @@ class HomeBloc extends ChangeNotifier implements IHomeBloc {
   }
 
   @override
-  void navigateHome() {
-    _navigatorApp.popUntil(AppRoutes.home);
-  }
-
-  @override
-  Stream<WordListModelState> get onFetchingDataWordList =>
+  Stream<HomeModelState> get onFetchingDataWordList =>
       _controllerWordList.stream;
   @override
-  Stream<WordListModelState> get onFetchingDataHistory =>
-      _controllerHistory.stream;
+  Stream<HomeModelState> get onFetchingDataHistory => _controllerHistory.stream;
   @override
-  Stream<WordListModelState> get onFetchingDataFavorites =>
+  Stream<HomeModelState> get onFetchingDataFavorites =>
       _controllerFavorites.stream;
 }

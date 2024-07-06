@@ -1,7 +1,6 @@
 import 'package:english_dictionary/view/home/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'custon_page_router.dart';
 
 class AppRoutes {
   static const String initial = home;

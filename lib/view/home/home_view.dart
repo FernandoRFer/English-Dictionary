@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'package:english_dictionary/view/home/components/favorites.dart';
 import 'package:english_dictionary/view/home/components/history.dart';
 import 'package:english_dictionary/view/home/components/word_list.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +57,9 @@ class _HomeViewState extends State<HomeView> {
               History(
                 widget: widget,
               ),
-              Container()
+              Favorites(
+                widget: widget,
+              )
             ],
           ),
         ),

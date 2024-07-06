@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
 import 'dart:io' as io;
 
@@ -17,13 +16,13 @@ abstract class IDbHistory {
 class DbHistory implements IDbHistory {
   final String _tableName = "searchHistory";
   final String _id = "id";
-  final String _searchWord = "searchWord";
+  final String _word = "word";
   final String _dateTime = "dateTime";
 
   Database? _db;
 
   DbHistory() {
-    _sqfliteTestInit();
+    db;
   }
 
   get db async {
@@ -33,7 +32,7 @@ class DbHistory implements IDbHistory {
 
   Future<void> _onCreate(Database db, int version) async {
     String sql =
-        "CREATE TABLE $_tableName ($_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, $_dateTime INTEGER ,$_searchWord TEXT)";
+        "CREATE TABLE $_tableName ($_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, $_dateTime INTEGER ,$_word TEXT)";
     await db.execute(sql);
   }
 
@@ -60,10 +59,10 @@ class DbHistory implements IDbHistory {
     final json = searHistory.toJson();
 
     final resul = await bancoDados.rawQuery(
-        "SELECT * FROM $_tableName WHERE $_searchWord = '${searHistory.searchWord}'");
+        "SELECT * FROM $_tableName WHERE $_word = '${searHistory.word}'");
 
     if (resul.isNotEmpty) {
-      await remove(searHistory.searchWord);
+      await remove(searHistory.word);
     }
     return await bancoDados.insert(_tableName, json);
   }
@@ -71,17 +70,17 @@ class DbHistory implements IDbHistory {
   @override
   Future<List<String>> get() async {
     Database bancoDados = await db;
-    final result = await bancoDados.rawQuery(
-        "SELECT $_searchWord FROM $_tableName ORDER BY $_dateTime DESC");
+    final result = await bancoDados
+        .rawQuery("SELECT $_word FROM $_tableName ORDER BY $_dateTime DESC");
     log(result.toString());
-    return result.map((e) => HistoryModel.fromJson(e).searchWord).toList();
+    return result.map((e) => HistoryModel.fromJson(e).word).toList();
   }
 
   @override
   Future<int> remove(String value) async {
     Database bancoDados = await db;
     return await bancoDados
-        .delete(_tableName, where: "$_searchWord = ?", whereArgs: [value]);
+        .delete(_tableName, where: "$_word = ?", whereArgs: [value]);
   }
 
   void _sqfliteTestInit() {

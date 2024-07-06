@@ -25,7 +25,7 @@ class History extends StatelessWidget {
           title: Text(wordList.last),
         ),
       ),
-      key: const PageStorageKey<String>("FavoritesList"),
+      key: const PageStorageKey<String>("HistoryList"),
       itemCount: wordList.length,
       itemBuilder: (context, index) {
         return Card(
@@ -50,9 +50,9 @@ class History extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<WordListModelState>(
-        stream: widget.bloc.onFetchingDataWordList,
-        initialData: WordListModelState("Loading", isLoading: true),
+    return StreamBuilder<HomeModelState>(
+        stream: widget.bloc.onFetchingDataHistory,
+        initialData: HomeModelState("Loading", isLoading: true),
         builder: (context, snapshot) {
           if (!snapshot.hasError) {
             if (snapshot.hasData) {
@@ -61,10 +61,12 @@ class History extends StatelessWidget {
                   child: AnimatedLoading(),
                 );
               }
-              return _getListView(
-                snapshot.data!.words,
-                widget.bloc.wordDetails,
-              );
+              if (snapshot.data!.words.isNotEmpty) {
+                return _getListView(
+                  snapshot.data!.words,
+                  widget.bloc.deleteItemHistory,
+                );
+              }
             }
           } else {
             WidgetsBinding.instance.addPostFrameCallback((_) {

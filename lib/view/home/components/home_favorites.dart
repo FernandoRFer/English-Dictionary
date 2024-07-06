@@ -1,6 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:developer';
-
 import 'package:english_dictionary/core/components/app_button.dart';
 import 'package:english_dictionary/core/components/bottom_sheet.dart';
 import 'package:english_dictionary/core/components/loading.dart';
@@ -8,38 +5,43 @@ import 'package:english_dictionary/core/theme/app_theme.dart';
 import 'package:english_dictionary/view/home/home_bloc.dart';
 import 'package:english_dictionary/view/home/home_view.dart';
 import 'package:flutter/material.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
 
-class WordList extends StatelessWidget {
+class Favorites extends StatelessWidget {
   final HomeView widget;
 
-  const WordList({
+  const Favorites({
     super.key,
     required this.widget,
   });
 
-  Widget _getSuperListView(
-    List<String> allWord,
+  Widget _getListView(
+    List<String> wordList,
     void Function(String word) onPressed,
   ) {
-    final listVeiw = SuperListView.builder(
-      physics: const PageScrollPhysics(),
-      key: const PageStorageKey<String>("listWords"),
-      itemCount: allWord.length,
+    final listVeiw = ListView.builder(
+      prototypeItem: Card(
+        child: ListTile(
+          titleAlignment: ListTileTitleAlignment.center,
+          title: Text(wordList.last),
+        ),
+      ),
+      key: const PageStorageKey<String>("FavoritesList"),
+      itemCount: wordList.length,
       itemBuilder: (context, index) {
         return Card(
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(kGlobalBorderRadiusInternal),
           ),
-          margin: const EdgeInsets.symmetric(vertical: 4),
           child: ListTile(
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(kGlobalBorderRadiusInternal),
-            ),
-            titleAlignment: ListTileTitleAlignment.center,
-            title: Text(allWord[index]),
-            onTap: () => onPressed(allWord[index]),
-          ),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(kGlobalBorderRadiusInternal),
+              ),
+              titleAlignment: ListTileTitleAlignment.center,
+              title: Text(wordList[index]),
+              trailing: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => onPressed(wordList[index]),
+              )),
         );
       },
     );
@@ -48,9 +50,9 @@ class WordList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<WordListModelState>(
-        stream: widget.bloc.onFetchingDataWordList,
-        initialData: WordListModelState("Loading", isLoading: true),
+    return StreamBuilder<HomeModelState>(
+        stream: widget.bloc.onFetchingDataHistory,
+        initialData: HomeModelState("Loading", isLoading: true),
         builder: (context, snapshot) {
           if (!snapshot.hasError) {
             if (snapshot.hasData) {
@@ -59,8 +61,7 @@ class WordList extends StatelessWidget {
                   child: AnimatedLoading(),
                 );
               }
-              log(snapshot.data?.words[0] ?? "vazio");
-              return _getSuperListView(
+              return _getListView(
                 snapshot.data!.words,
                 widget.bloc.wordDetails,
               );

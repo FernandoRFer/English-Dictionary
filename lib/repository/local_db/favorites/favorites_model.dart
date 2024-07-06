@@ -1,16 +1,16 @@
 class FavoritesModel {
   int? id;
-  String searchWord;
+  String word;
   int dateTime;
   FavoritesModel({
     this.id,
-    required this.searchWord,
+    required this.word,
     required this.dateTime,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'searchWord': searchWord,
+      'word': word,
       'dateTime': dateTime,
     };
   }
@@ -18,7 +18,7 @@ class FavoritesModel {
   factory FavoritesModel.fromJson(Map<String, dynamic> json) {
     return FavoritesModel(
       id: json['id'] ?? 0,
-      searchWord: json['searchWord'] ?? "",
+      word: json['word'] ?? "",
       dateTime: json['dateTime'] ?? 0,
     );
   }
