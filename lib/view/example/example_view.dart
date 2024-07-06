@@ -51,24 +51,24 @@ class _ExampleViewState extends State<ExampleView> {
                       );
                     }
                     return const Text("Bem vindo!");
-                  } else {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      BottomSheetHelper().bottomSheetCustom(
-                          title: "Error",
-                          subtitle: snapshot.error.toString(),
-                          isDismissible: true,
-                          enableDrag: false,
-                          context: context,
-                          buttons: [
-                            AppOutlinedButton(
-                              "Back",
-                              onPressed: () {
-                                widget.bloc.navigatorPop();
-                              },
-                            ),
-                          ]);
-                    });
                   }
+                } else {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    BottomSheetHelper().bottomSheetCustom(
+                        title: "Error",
+                        subtitle: snapshot.error.toString(),
+                        isDismissible: true,
+                        enableDrag: false,
+                        context: context,
+                        buttons: [
+                          AppOutlinedButton(
+                            "Back",
+                            onPressed: () {
+                              widget.bloc.navigatorPop();
+                            },
+                          ),
+                        ]);
+                  });
                 }
                 return Container();
               }),
