@@ -1,6 +1,6 @@
-import 'package:english_dictionary/view/home/components/favorites.dart';
-import 'package:english_dictionary/view/home/components/history.dart';
-import 'package:english_dictionary/view/home/components/word_list.dart';
+import 'package:english_dictionary/view/home/components/home_favorites.dart';
+import 'package:english_dictionary/view/home/components/home_history.dart';
+import 'package:english_dictionary/view/home/components/home_word_list.dart';
 import 'package:flutter/material.dart';
 import 'home_bloc.dart';
 
