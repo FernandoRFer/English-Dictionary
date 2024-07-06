@@ -10,6 +10,7 @@ class HomeModule {
       ..registerFactory<IHomeBloc>(() => HomeBloc(
             getIt(),
             getIt(),
+            getIt(),
           ))
       ..registerFactory(() => HomeView(getIt()));
   }
