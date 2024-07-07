@@ -51,7 +51,7 @@ class Favorites extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<HomeModelState>(
-        stream: widget.bloc.onFetchingDataHistory,
+        stream: widget.bloc.onFetchingDataFavorites,
         initialData: HomeModelState("Loading", isLoading: true),
         builder: (context, snapshot) {
           if (!snapshot.hasError) {
@@ -61,10 +61,12 @@ class Favorites extends StatelessWidget {
                   child: AnimatedLoading(),
                 );
               }
-              return _getListView(
-                snapshot.data!.words,
-                widget.bloc.wordDetails,
-              );
+              if (snapshot.data!.words.isNotEmpty) {
+                return _getListView(
+                  snapshot.data!.words,
+                  widget.bloc.deleteItemFavorites,
+                );
+              }
             }
           } else {
             WidgetsBinding.instance.addPostFrameCallback((_) {

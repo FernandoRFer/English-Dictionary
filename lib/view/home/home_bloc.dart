@@ -1,14 +1,14 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:english_dictionary/core/helpers/global_error.dart';
 import 'package:english_dictionary/core/navigator_app.dart';
-import 'package:english_dictionary/repository/local_db/favorites/favorites_db.dart.dart';
-import 'package:english_dictionary/repository/local_db/history/history_db.dart.dart';
-import 'package:english_dictionary/repository/local_db/history/history_model.dart';
+import 'package:english_dictionary/repository/local_db/History/History_model.dart';
+import 'package:english_dictionary/repository/favorites_db.dart.dart';
+import 'package:english_dictionary/repository/history_db.dart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
-import '../../core/router/routes.dart';
 import '../view_state_entity.dart';
 
 class HomeModelState extends ViewStateEntity {
@@ -31,7 +31,9 @@ abstract class IHomeBloc {
   Future<void> wordDetails(String value);
 
   Future<void> deleteItemHistory(String value);
+
   Future<void> getFavorites();
+  Future<void> deleteItemFavorites(String value);
 
   void navigatorPop();
   Future<void> dispose();
@@ -165,6 +167,26 @@ class HomeBloc extends ChangeNotifier implements IHomeBloc {
     } catch (e) {
       final error = await _globalError.errorHandling(
           "Um erro  ocorreu ao conectar, tente novamente", e);
+      log(error.message);
+      _controllerFavorites.addError(error.message);
+    }
+  }
+
+  @override
+  Future<void> deleteItemFavorites(String value) async {
+    try {
+      _controllerFavorites.add(HomeModelState(
+        "Loading",
+        isLoading: true,
+      ));
+      await _dbHistory.remove(value);
+      final result = await _dbHistory.get();
+
+      _controllerFavorites
+          .add(HomeModelState("done", isLoading: false, words: result));
+    } catch (e) {
+      final error = await _globalError.errorHandling(
+          "Um erro  ocorreu ao conectar, tente novamente", e);
       _controllerFavorites.addError(error.message);
     }
   }
@@ -179,6 +201,7 @@ class HomeBloc extends ChangeNotifier implements IHomeBloc {
       _controllerWordList.stream;
   @override
   Stream<HomeModelState> get onFetchingDataHistory => _controllerHistory.stream;
+
   @override
   Stream<HomeModelState> get onFetchingDataFavorites =>
       _controllerFavorites.stream;

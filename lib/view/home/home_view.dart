@@ -16,10 +16,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  List<String> wordList = [];
-  Set<String> history = {};
-  ScrollController lisrWordController = ScrollController();
-
   @override
   void initState() {
     super.initState();
