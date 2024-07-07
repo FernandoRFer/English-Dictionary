@@ -3,9 +3,10 @@ import 'dart:developer';
 
 import 'package:english_dictionary/core/helpers/global_error.dart';
 import 'package:english_dictionary/core/navigator_app.dart';
-import 'package:english_dictionary/repository/local_db/History/History_model.dart';
+import 'package:english_dictionary/core/router/routes.dart';
 import 'package:english_dictionary/repository/favorites_db.dart.dart';
 import 'package:english_dictionary/repository/history_db.dart.dart';
+import 'package:english_dictionary/repository/local_db/model/history_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
@@ -85,6 +86,7 @@ class HomeBloc extends ChangeNotifier implements IHomeBloc {
     try {
       await _dbHistory.insert(HistoryModel(
           word: word, dateTime: DateTime.now().microsecondsSinceEpoch));
+      await _navigatorApp.pushNamed(AppRoutes.wordDetails);
       await getHistory();
     } catch (e) {
       final error = await _globalError.errorHandling(

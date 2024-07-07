@@ -1,8 +1,8 @@
+import 'package:english_dictionary/repository/local_db/model/favorites_fields.dart';
+import 'package:english_dictionary/repository/local_db/model/favorites_model.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-import 'package:english_dictionary/repository/local_db/model/favorites_fields.dart';
 import 'package:english_dictionary/repository/local_db/Database.dart';
-import 'package:english_dictionary/repository/local_db/model/favorites_model.dart';
 
 abstract class IDbFavorites {
   Future<int> insert(FavoritesModel searHistoryModel);

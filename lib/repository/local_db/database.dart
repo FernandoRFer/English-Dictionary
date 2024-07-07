@@ -1,7 +1,6 @@
 import 'dart:io' as io;
 import 'package:english_dictionary/repository/local_db/model/favorites_fields.dart';
 import 'package:english_dictionary/repository/local_db/model/hitsory_fields.dart';
-import 'package:english_dictionary/view/home/components/home_history.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
