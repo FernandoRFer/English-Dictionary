@@ -1,12 +1,14 @@
-import 'package:english_dictionary/repository/local_db/model/favorites_fields.dart';
-import 'package:english_dictionary/repository/local_db/model/favorites_model.dart';
+import 'package:english_dictionary/repository/model/favorites_fields.dart';
+import 'package:english_dictionary/repository/model/favorites_model.dart';
+import 'package:english_dictionary/repository/model/word_model.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'package:english_dictionary/repository/local_db/Database.dart';
 
 abstract class IDbFavorites {
   Future<int> insert(FavoritesModel searHistoryModel);
-  Future<List<String>> get();
+  Future<List<WordModel>> getAll();
+  Future<WordModel?> getWord(String word);
   Future<int> remove(String value);
 }
 
@@ -32,12 +34,12 @@ class DbFavorites implements IDbFavorites {
   }
 
   @override
-  Future<List<String>> get() async {
+  Future<List<WordModel>> getAll() async {
     Database bancoDados = await _databaseConfigure.db;
     final result = await bancoDados.rawQuery("""SELECT ${FavoritesFields.word} 
         FROM ${FavoritesFields.tableName} 
         ORDER BY ${FavoritesFields.dateTime} DESC""");
-    return result.map((e) => FavoritesModel.fromJson(e).word).toList();
+    return result.map((e) => WordModel.fromJson(e)).toList();
   }
 
   @override
@@ -45,5 +47,17 @@ class DbFavorites implements IDbFavorites {
     Database bancoDados = await _databaseConfigure.db;
     return await bancoDados.delete(FavoritesFields.tableName,
         where: "${FavoritesFields.word} = ?", whereArgs: [value]);
+  }
+
+  @override
+  Future<WordModel?> getWord(String word) async {
+    Database bancoDados = await _databaseConfigure.db;
+    final result = await bancoDados.rawQuery("""SELECT * 
+        FROM ${FavoritesFields.tableName} 
+        WHERE ${FavoritesFields.word} = '$word'""");
+    if (result.isNotEmpty) {
+      return WordModel.fromJson(result[0]);
+    }
+    return null;
   }
 }

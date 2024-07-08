@@ -47,9 +47,7 @@ class AppOutlinedButton extends StatelessWidget {
                   const SizedBox(width: 10),
                   Text(text,
                       style: TextStyle(
-                          color: colorText ??
-                              Theme.of(context).scaffoldBackgroundColor,
-                          fontWeight: FontWeight.bold)),
+                          color: colorText, fontWeight: FontWeight.bold)),
                 ],
               ),
       ),

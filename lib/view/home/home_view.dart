@@ -35,7 +35,7 @@ class _HomeViewState extends State<HomeView> {
       child: Scaffold(
         appBar: AppBar(
             centerTitle: true,
-            title: const Text("English Dictionary"),
+            title: const Text("Word Explorer"),
             bottom: const TabBar(
               tabs: [
                 Tab(child: Text("Word List")),
@@ -46,6 +46,7 @@ class _HomeViewState extends State<HomeView> {
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: TabBarView(
+            physics: const NeverScrollableScrollPhysics(),
             children: [
               WordList(
                 widget: widget,

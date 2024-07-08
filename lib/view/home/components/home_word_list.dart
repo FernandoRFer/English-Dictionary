@@ -1,10 +1,8 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:developer';
-
 import 'package:english_dictionary/core/components/app_button.dart';
 import 'package:english_dictionary/core/components/bottom_sheet.dart';
 import 'package:english_dictionary/core/components/loading.dart';
 import 'package:english_dictionary/core/theme/app_theme.dart';
+import 'package:english_dictionary/repository/model/word_model.dart';
 import 'package:english_dictionary/view/home/home_bloc.dart';
 import 'package:english_dictionary/view/home/home_view.dart';
 import 'package:flutter/material.dart';
@@ -19,8 +17,8 @@ class WordList extends StatelessWidget {
   });
 
   Widget _getSuperListView(
-    List<String> allWord,
-    void Function(String word) onPressed,
+    List<WordModel> allWord,
+    void Function(WordModel word) onPressed,
   ) {
     final listVeiw = SuperListView.builder(
       physics: const PageScrollPhysics(),
@@ -37,7 +35,7 @@ class WordList extends StatelessWidget {
               borderRadius: BorderRadius.all(kGlobalBorderRadiusInternal),
             ),
             titleAlignment: ListTileTitleAlignment.center,
-            title: Text(allWord[index]),
+            title: Text(allWord[index].word),
             onTap: () => onPressed(allWord[index]),
           ),
         );
@@ -48,42 +46,71 @@ class WordList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<HomeModelState>(
-        stream: widget.bloc.onFetchingDataWordList,
-        initialData: HomeModelState("Loading", isLoading: true),
-        builder: (context, snapshot) {
-          if (!snapshot.hasError) {
-            if (snapshot.hasData) {
-              if (snapshot.data!.isLoading) {
-                return const Center(
-                  child: AnimatedLoading(),
-                );
-              }
-              log(snapshot.data?.words[0] ?? "vazio");
-              return _getSuperListView(
-                snapshot.data!.words,
-                widget.bloc.wordDetails,
-              );
-            }
-          } else {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              BottomSheetHelper().bottomSheetCustom(
-                  title: "Error",
-                  subtitle: snapshot.error.toString(),
-                  isDismissible: true,
-                  enableDrag: false,
-                  context: context,
-                  buttons: [
-                    AppOutlinedButton(
-                      "Back",
-                      onPressed: () {
-                        widget.bloc.navigatorPop();
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: StreamBuilder<HomeModelState>(
+          stream: widget.bloc.onFetchingDataWordList,
+          initialData: HomeModelState("Loading", isLoading: true),
+          builder: (context, snapshot) {
+            if (!snapshot.hasError) {
+              if (snapshot.hasData) {
+                if (snapshot.data!.isLoading) {
+                  return Center(
+                    child: AnimatedLoading(title: snapshot.data!.state),
+                  );
+                }
+
+                return Column(
+                  children: [
+                    TextFormField(
+                      decoration: const InputDecoration(
+                          label: Text("Search"),
+                          suffixIcon: Icon(Icons.search)),
+                      onChanged: (value) {
+                        FocusScope.of(context).unfocus();
+                        widget.bloc.search(value);
                       },
                     ),
-                  ]).then((value) => widget.bloc.load());
-            });
-          }
-          return Container();
-        });
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    snapshot.data!.words.isEmpty
+                        ? const Center(
+                            child: Text(
+                              "Not found :(",
+                              style: TextStyle(fontSize: 32),
+                            ),
+                          )
+                        : Expanded(
+                            child: _getSuperListView(
+                              snapshot.data!.words,
+                              widget.bloc.wordDetails,
+                            ),
+                          ),
+                  ],
+                );
+              }
+            } else {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                BottomSheetHelper().bottomSheetCustom(
+                    title: "Error",
+                    subtitle: snapshot.error.toString(),
+                    isDismissible: true,
+                    enableDrag: false,
+                    context: context,
+                    buttons: [
+                      AppOutlinedButton(
+                        "Back",
+                        onPressed: () {
+                          widget.bloc.navigatorPop();
+                        },
+                      ),
+                    ]).then((value) => widget.bloc.load());
+              });
+            }
+            return Container();
+          }),
+    );
   }
 }

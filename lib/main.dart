@@ -4,13 +4,14 @@ import 'package:english_dictionary/core/router/routes.dart';
 import 'package:english_dictionary/core/theme/app_theme.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() async {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
   final globalRouteObserver = GlobalRouteObserver();
 
   WidgetsFlutterBinding.ensureInitialized();
-
+  _sqfliteTestInit();
   AppModule(navigatorKey).configure();
 
   return runApp(AppWidget(navigatorKey, globalRouteObserver));
@@ -47,11 +48,18 @@ class _AppWidgetState extends State<AppWidget> {
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
       navigatorKey: widget._navigatorKey,
-      title: 'English Dictionary',
+      title: 'Word Explorer',
       theme: AppTheme.themeData,
       onGenerateRoute: AppRoutes.onGenerateRoutes,
       initialRoute: AppRoutes.initial,
       routes: AppRoutes.routes,
     );
   }
+}
+
+void _sqfliteTestInit() {
+  // Initialize ffi implementation
+  sqfliteFfiInit();
+  // Set global factory
+  databaseFactory = databaseFactoryFfi;
 }

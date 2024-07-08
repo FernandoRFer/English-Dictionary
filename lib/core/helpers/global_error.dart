@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
+import 'package:english_dictionary/repository/rest_client/rest_client_exception.dart';
 import 'package:flutter/services.dart';
 
 abstract class IGlobalError {
@@ -17,6 +19,7 @@ class GlobalError implements IGlobalError {
     Object? error,
     StackTrace? stackTrace,
   ]) async {
+    log(error.toString());
     switch (error.runtimeType) {
       case const (SocketException):
         error as SocketException;
@@ -31,12 +34,12 @@ class GlobalError implements IGlobalError {
           GlobalErrorTypes.hardware,
           error.toString(),
         );
-      // case const (RestClientException):
-      //   error as RestClientException;
-      //   return GlobalErrorModel(
-      //     GlobalErrorTypes.request,
-      //     error.getMessage(),
-      //   );
+      case const (RestClientException):
+        error as RestClientException;
+        return GlobalErrorModel(
+          GlobalErrorTypes.request,
+          error.getMessage(),
+        );
       case const (TimeoutException):
         error as TimeoutException;
         return GlobalErrorModel(

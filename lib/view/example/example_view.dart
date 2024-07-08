@@ -47,7 +47,9 @@ class _ExampleViewState extends State<ExampleView> {
                   if (snapshot.hasData) {
                     if (snapshot.data!.isLoading) {
                       return const Center(
-                        child: AnimatedLoading(),
+                        child: AnimatedLoading(
+                          title: "",
+                        ),
                       );
                     }
                     return const Text("Bem vindo!");
