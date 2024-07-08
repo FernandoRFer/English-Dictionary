@@ -1,15 +1,17 @@
-class FavoritesModel {
-  int? id;
-  String word;
+import 'package:english_dictionary/repository/model/word_model.dart';
+
+class FavoritesModel extends WordModel {
   int dateTime;
   FavoritesModel({
-    this.id,
-    required this.word,
     required this.dateTime,
+    required super.id,
+    required super.word,
   });
 
+  @override
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'word': word,
       'dateTime': dateTime,
     };

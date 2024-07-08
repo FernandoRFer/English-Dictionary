@@ -12,6 +12,7 @@ class HomeModule {
             getIt(),
             getIt(),
             getIt(),
+            getIt(),
           ))
       ..registerFactory(() => HomeView(getIt()));
   }

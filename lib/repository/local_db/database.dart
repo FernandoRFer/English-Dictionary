@@ -1,6 +1,6 @@
 import 'dart:io' as io;
-import 'package:english_dictionary/repository/local_db/model/favorites_fields.dart';
-import 'package:english_dictionary/repository/local_db/model/hitsory_fields.dart';
+import 'package:english_dictionary/repository/model/favorites_fields.dart';
+import 'package:english_dictionary/repository/model/hitsory_fields.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -19,7 +19,8 @@ class DatabaseConfigure implements IDatabaseConfigure {
   }
 
   Future<Database> _starDB() async {
-    _sqfliteTestInit();
+    // _sqfliteTestInit();
+
     final io.Directory appDocumentsDir =
         await getApplicationDocumentsDirectory();
 

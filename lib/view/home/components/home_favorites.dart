@@ -1,7 +1,9 @@
 import 'package:english_dictionary/core/components/app_button.dart';
 import 'package:english_dictionary/core/components/bottom_sheet.dart';
+import 'package:english_dictionary/core/components/list_view_custo.dart';
 import 'package:english_dictionary/core/components/loading.dart';
 import 'package:english_dictionary/core/theme/app_theme.dart';
+import 'package:english_dictionary/repository/model/word_model.dart';
 import 'package:english_dictionary/view/home/home_bloc.dart';
 import 'package:english_dictionary/view/home/home_view.dart';
 import 'package:flutter/material.dart';
@@ -15,33 +17,50 @@ class Favorites extends StatelessWidget {
   });
 
   Widget _getListView(
-    List<String> wordList,
-    void Function(String word) onPressed,
+    List<WordModel> wordList,
+    void Function(String word) onPressedIcon,
+    void Function(WordModel word) onPressedTitle,
   ) {
     final listVeiw = ListView.builder(
-      prototypeItem: Card(
-        child: ListTile(
-          titleAlignment: ListTileTitleAlignment.center,
-          title: Text(wordList.last),
-        ),
-      ),
       key: const PageStorageKey<String>("FavoritesList"),
       itemCount: wordList.length,
       itemBuilder: (context, index) {
         return Card(
+          margin: const EdgeInsets.all(0),
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(kGlobalBorderRadiusInternal),
           ),
-          child: ListTile(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(kGlobalBorderRadiusInternal),
-              ),
-              titleAlignment: ListTileTitleAlignment.center,
-              title: Text(wordList[index]),
-              trailing: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => onPressed(wordList[index]),
-              )),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      style: ButtonStyle(
+                          shape: WidgetStateProperty.all(
+                              const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.all(kGlobalBorderRadiusInternal),
+                      ))),
+                      child: SizedBox(
+                        height: 48,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            wordList[index].word,
+                          ),
+                        ),
+                      ),
+                      onPressed: () => onPressedTitle(wordList[index]),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => onPressedIcon(wordList[index].word),
+                  ),
+                ]),
+          ),
         );
       },
     );
@@ -56,15 +75,16 @@ class Favorites extends StatelessWidget {
         builder: (context, snapshot) {
           if (!snapshot.hasError) {
             if (snapshot.hasData) {
-              if (snapshot.data!.isLoading) {
-                return const Center(
-                  child: AnimatedLoading(),
-                );
-              }
               if (snapshot.data!.words.isNotEmpty) {
-                return _getListView(
+                return ListViewCusto(
                   snapshot.data!.words,
                   widget.bloc.deleteItemFavorites,
+                  widget.bloc.wordDetails,
+                );
+              }
+              if (snapshot.data!.isLoading) {
+                return Center(
+                  child: AnimatedLoading(title: snapshot.data!.state),
                 );
               }
             }

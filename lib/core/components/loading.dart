@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'dots_loading.dart';
 
 class AnimatedLoading extends StatelessWidget {
-  final String title;
+  final String? title;
   const AnimatedLoading({
     super.key,
-    this.title = "Carregando",
+    this.title,
   });
 
   @override
@@ -21,7 +21,7 @@ class AnimatedLoading extends StatelessWidget {
           const SizedBox(
             width: 350,
             child: LinearProgressIndicator(
-              minHeight: 18,
+              minHeight: 10,
               borderRadius: BorderRadius.all(kGlobalBorderRadiusExternal),
             ),
             //   child: const Icon(
@@ -50,17 +50,19 @@ class AnimatedLoading extends StatelessWidget {
           const SizedBox(
             height: 8,
           ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.headlineSmall,
-                textAlign: TextAlign.justify,
-              ),
-              const DotsLoading(),
-            ],
-          )
+          title != null
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title!,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                      textAlign: TextAlign.justify,
+                    ),
+                    const DotsLoading(),
+                  ],
+                )
+              : const SizedBox(),
         ],
       ),
     );

@@ -1,15 +1,17 @@
-class HistoryModel {
-  int? id;
-  String word;
+import 'package:english_dictionary/repository/model/word_model.dart';
+
+class HistoryModel extends WordModel {
   int dateTime;
   HistoryModel({
-    this.id,
-    required this.word,
+    required super.id,
+    required super.word,
     required this.dateTime,
   });
 
+  @override
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'word': word,
       'dateTime': dateTime,
     };
