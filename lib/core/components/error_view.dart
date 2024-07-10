@@ -1,75 +1,56 @@
-import 'dart:async';
-
-import 'package:english_dictionary/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
-extension BottomSheetHelper on ScaffoldState {
-  Future<bool?> bottomSheetCustom({
-    String title = "",
-    String subtitle = "",
-    List<Widget>? buttons,
-    required bool isDismissible,
-    required BuildContext context,
-    bool enableDrag = false,
-  }) async {
-    return await showModalBottomSheet<bool>(
-      isDismissible: isDismissible,
-      enableDrag: enableDrag,
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(kGlobalBorderRadiusExternal),
-      ),
-      builder: ((context) {
-        return SizedBox(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Flexible(
-                    flex: 4,
-                    child: Container(),
+class ErrorView extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final List<Widget>? buttons;
+  final bool isDismissible;
+  final BuildContext context;
+  final bool enableDrag = false;
+
+  const ErrorView({
+    super.key,
+    this.title = "",
+    this.subtitle = "",
+    this.buttons,
+    required this.isDismissible,
+    required this.context,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(title,
+                    style: const TextStyle(
+                      color: Colors.red,
+                    )),
+                const SizedBox(height: 16),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 250),
+                  child: SingleChildScrollView(
+                    child: Text(subtitle, style: const TextStyle()),
                   ),
-                  const Flexible(
-                      flex: 2,
-                      child: Divider(
-                        thickness: 2,
-                        color: Colors.grey,
-                      )),
-                  Flexible(
-                    flex: 4,
-                    child: Container(),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(title,
-                        style: const TextStyle(
-                          color: Colors.red,
-                        )),
-                    const SizedBox(height: 20),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: 250),
-                      child: SingleChildScrollView(
-                        child: Text(subtitle, style: const TextStyle()),
-                      ),
-                    ),
-                    const SizedBox(height: 26),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [...buttons ?? []],
-                    ),
-                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 39),
+              ],
+            ),
           ),
-        );
-      }),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [...buttons ?? []],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

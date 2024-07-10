@@ -110,9 +110,9 @@ class WordDetailsBloc extends ChangeNotifier implements IWordDetailsBloc {
 
   @override
   Future<void> dispose() async {
-    await _controllerPlayer.close();
-    await _fetchingDataController.close();
-    await player.dispose();
+    _controllerPlayer.close();
+    _fetchingDataController.close();
+    player.dispose();
     super.dispose();
   }
 

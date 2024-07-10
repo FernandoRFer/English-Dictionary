@@ -1,5 +1,6 @@
 import 'package:english_dictionary/core/components/app_button.dart';
 import 'package:english_dictionary/core/components/bottom_sheet.dart';
+import 'package:english_dictionary/core/components/error_view.dart';
 import 'package:english_dictionary/core/components/loading.dart';
 import 'package:english_dictionary/core/theme/app_theme.dart';
 import 'package:english_dictionary/repository/model/word_model.dart';
@@ -36,7 +37,10 @@ class WordList extends StatelessWidget {
             ),
             titleAlignment: ListTileTitleAlignment.center,
             title: Text(allWord[index].word),
-            onTap: () => onPressed(allWord[index]),
+            onTap: () {
+              FocusScope.of(context).unfocus();
+              onPressed(allWord[index]);
+            },
           ),
         );
       },
@@ -68,7 +72,6 @@ class WordList extends StatelessWidget {
                           label: Text("Search"),
                           suffixIcon: Icon(Icons.search)),
                       onChanged: (value) {
-                        FocusScope.of(context).unfocus();
                         widget.bloc.search(value);
                       },
                     ),
@@ -92,22 +95,19 @@ class WordList extends StatelessWidget {
                 );
               }
             } else {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                BottomSheetHelper().bottomSheetCustom(
-                    title: "Error",
-                    subtitle: snapshot.error.toString(),
-                    isDismissible: true,
-                    enableDrag: false,
-                    context: context,
-                    buttons: [
-                      AppOutlinedButton(
-                        "Back",
-                        onPressed: () {
-                          widget.bloc.navigatorPop();
-                        },
-                      ),
-                    ]).then((value) => widget.bloc.load());
-              });
+              ErrorView(
+                  title: "Error",
+                  subtitle: snapshot.error.toString(),
+                  isDismissible: true,
+                  context: context,
+                  buttons: [
+                    AppOutlinedButton(
+                      "Back",
+                      onPressed: () {
+                        widget.bloc.navigatorPop();
+                      },
+                    ),
+                  ]);
             }
             return Container();
           }),

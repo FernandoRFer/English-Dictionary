@@ -1,12 +1,14 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:english_dictionary/core/components/app_button.dart';
+import 'package:english_dictionary/core/components/error_view.dart';
 import 'package:english_dictionary/core/components/loading.dart';
 import 'package:english_dictionary/core/components/bottom_sheet.dart';
 import 'package:english_dictionary/core/theme/app_theme.dart';
 import 'package:english_dictionary/view/word_details/components/player.dart';
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:flutter/scheduler.dart';
 import 'word_details_bloc.dart';
 
 class WordDetailsView extends StatefulWidget {
@@ -24,10 +26,13 @@ class _WordDetailsViewState extends State<WordDetailsView> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () {
-      final args =
-          ModalRoute.of(context)?.settings.arguments as ArgsWordDetails;
-      widget.bloc.load(args);
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(Duration.zero, () {
+        final args =
+            ModalRoute.of(context)?.settings.arguments as ArgsWordDetails;
+        widget.bloc.load(args);
+        // context can be used here...
+      });
     });
   }
 
@@ -39,14 +44,13 @@ class _WordDetailsViewState extends State<WordDetailsView> {
 
   @override
   Widget build(BuildContext context) {
-    widget.bloc.onFetchingData.doOnResume(() {
-      log("test erro");
-    });
+    widget.bloc.onFetchingData.listen((e) {}).onError((e, r) => log('erro'));
     return Scaffold(
       appBar: AppBar(
         actions: [
           StreamBuilder<bool?>(
               stream: widget.bloc.onFavoriteData,
+              initialData: null,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return IconButton(
@@ -71,9 +75,8 @@ class _WordDetailsViewState extends State<WordDetailsView> {
           padding: const EdgeInsets.all(8.0),
           child: StreamBuilder<WordDetailsModel>(
               stream: widget.bloc.onFetchingData,
-              // initialData: WordDetailsModel("Initial state", isLoading: false),
+              initialData: WordDetailsModel("Initial state", isLoading: false),
               builder: (context, snapshot) {
-                widget.bloc.onFetchingData;
                 if (!snapshot.hasError) {
                   if (snapshot.hasData) {
                     if (snapshot.data!.isLoading) {
@@ -113,7 +116,7 @@ class _WordDetailsViewState extends State<WordDetailsView> {
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: SizedBox(
-                              height: 130,
+                              height: 120,
                               child: Center(
                                 child: ListView.builder(
                                     itemCount: wordDetail.meanings.length,
@@ -191,22 +194,19 @@ class _WordDetailsViewState extends State<WordDetailsView> {
                     }
                   }
                 } else {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    BottomSheetHelper().bottomSheetCustom(
-                        title: "Error",
-                        subtitle: snapshot.error.toString(),
-                        isDismissible: false,
-                        enableDrag: true,
-                        context: context,
-                        buttons: [
-                          AppOutlinedButton(
-                            "Back",
-                            onPressed: () {
-                              widget.bloc.navigateHome();
-                            },
-                          ),
-                        ]);
-                  });
+                  return ErrorView(
+                      title: "Error",
+                      subtitle: snapshot.error.toString(),
+                      isDismissible: false,
+                      context: context,
+                      buttons: [
+                        AppOutlinedButton(
+                          "Back",
+                          onPressed: () {
+                            widget.bloc.navigateHome();
+                          },
+                        ),
+                      ]);
                 }
                 return Container();
               }),

@@ -42,7 +42,8 @@ class HistoryCache implements IHistoryCache {
     final data = await box.get(id);
 
     if (data == null) return null;
+    var convertStrint = (jsonEncode(data));
 
-    return WordDetailsEntity.fromJson(data);
+    return WordDetailsEntity.fromJson(jsonDecode(convertStrint));
   }
 }
