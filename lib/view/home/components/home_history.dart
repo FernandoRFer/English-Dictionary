@@ -78,8 +78,6 @@ class History extends StatelessWidget {
             ErrorView(
                 title: "Error",
                 subtitle: snapshot.error.toString(),
-                isDismissible: true,
-                context: context,
                 buttons: [
                   AppOutlinedButton(
                     "Back",

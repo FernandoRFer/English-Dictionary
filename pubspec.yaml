@@ -47,6 +47,7 @@ dependencies:
   audioplayers: ^6.0.0
   http: any
   hive: ^2.2.3
+  mask_text_input_formatter: ^2.9.0
 
 dev_dependencies:
   flutter_test:

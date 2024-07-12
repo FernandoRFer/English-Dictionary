@@ -4,8 +4,6 @@ class ErrorView extends StatelessWidget {
   final String title;
   final String subtitle;
   final List<Widget>? buttons;
-  final bool isDismissible;
-  final BuildContext context;
   final bool enableDrag = false;
 
   const ErrorView({
@@ -13,8 +11,6 @@ class ErrorView extends StatelessWidget {
     this.title = "",
     this.subtitle = "",
     this.buttons,
-    required this.isDismissible,
-    required this.context,
   });
 
   @override
@@ -22,6 +18,7 @@ class ErrorView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Stack(
+        alignment: AlignmentDirectional.bottomStart,
         children: [
           Center(
             child: Column(
@@ -38,7 +35,7 @@ class ErrorView extends StatelessWidget {
                     child: Text(subtitle, style: const TextStyle()),
                   ),
                 ),
-                const SizedBox(height: 39),
+                const SizedBox(height: 55),
               ],
             ),
           ),

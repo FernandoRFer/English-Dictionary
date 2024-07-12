@@ -197,8 +197,6 @@ class _WordDetailsViewState extends State<WordDetailsView> {
                   return ErrorView(
                       title: "Error",
                       subtitle: snapshot.error.toString(),
-                      isDismissible: false,
-                      context: context,
                       buttons: [
                         AppOutlinedButton(
                           "Back",
