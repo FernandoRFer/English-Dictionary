@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:english_dictionary/core/components/app_button.dart';
 import 'package:english_dictionary/core/components/bottom_sheet.dart';
 import 'package:english_dictionary/core/components/error_view.dart';
@@ -25,13 +28,13 @@ class _AuthViewState extends State<AuthView> with Validator {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _passordController = TextEditingController();
   final TextEditingController _userController = TextEditingController();
-  bool stayConnected = false;
+  bool _stayConnected = false;
+  late StreamSubscription<AuthModelBloc> listenBloc;
   // final LocalAuthentication auth = LocalAuthentication();
   // final _SupportState _supportState = _SupportState.unknown;
   // bool? _canCheckBiometrics;
   // List<BiometricType>? _availableBiometrics;
   // final String _authorized = 'Not Authorized';
-  // final bool _isAuthenticating = false;
 
   // @override
   // void initState() {
@@ -46,7 +49,11 @@ class _AuthViewState extends State<AuthView> with Validator {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, widget.bloc.load);
+    widget.bloc.onFetchingData.listen((e) {
+      _stayConnected = e.isStayConnected;
+    }).onDone(() {
+      log("teste disposer listen");
+    });
   }
 
   @override
@@ -74,148 +81,47 @@ class _AuthViewState extends State<AuthView> with Validator {
                     if (snapshot.hasData) {
                       if (snapshot.data!.isLoading) {
                         return const Center(child: AnimatedLoading());
-
-                        // return ValueListenableBuilder(
-                        //     valueListenable: isAuth,
-                        //     builder: (context, value, child) {
-                        //       return AnimatedSwitcher(
-                        //         duration: const Duration(milliseconds: 400),
-                        //         child: snapshot.data?.isLoading ?? true
-                        //             ? const CircularProgressIndicator(
-                        //                 key: ValueKey('Loading a'),
-                        //               )
-                        //             : const Icon(
-                        //                 Icons.lock_open_outlined,
-                        //                 size: 100,
-                        //                 key: ValueKey('Icon b'),
-                        //               ),
-
-                        //         transitionBuilder: (Widget child,
-                        //             Animation<double> animation) {
-                        //           return ScaleTransition(
-                        //             scale: animation,
-                        //             child: child,
-                        //           );
-                        //         },
-                        // const Icon(
-                        //     Icons.lock_open,
-                        //     size: 100,
-                        //     key: ValueKey('Icon b'),
-                        //   ),
-                        //   )
-                        // })
                       }
-                      return Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Column(
-                              children: [
-                                const Icon(
-                                  Icons.wordpress_outlined,
-                                  size: 150,
-                                ),
-                                const SizedBox(height: 48),
-                                AppTextFormField(
-                                    labelText: "E-Mail",
-                                    controller: _userController,
-                                    icon: Icons.account_circle,
-                                    validador: userValidator),
-                                const SizedBox(height: 24),
-                                AppTextFormField(
-                                    labelText: "Senha",
-                                    controller: _passordController,
-                                    isPassword: true,
-                                    validador: passwordValidator),
-                                const SizedBox(height: 8),
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: TextButton(
-                                      onPressed: () {},
-                                      style: ButtonStyle(
-                                          shape: WidgetStateProperty.all(
-                                        const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(
-                                              kGlobalBorderRadiusInternal),
-                                        ),
-                                      )),
-                                      child: const Text('Esqueci a senha',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w100))),
-                                ),
-                                const SizedBox(height: 8),
-                                AppOutlinedButton(
-                                  "Entrar",
-                                  onPressed: () async {
-                                    if (_formKey.currentState!.validate()) {
-                                      await widget.bloc.login(
-                                        password: _passordController.text,
-                                        eMail: _userController.text,
-                                      );
-                                    }
-                                  },
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    const Text(
-                                      "Deseja manter conectado?",
-                                    ),
-                                    Checkbox(
-                                        value: snapshot.data!.isStayConnected,
-                                        onChanged: (value) {
-                                          widget.bloc.stayConnected();
-                                        }),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                const Divider(
-                                  height: 1,
-                                  thickness: 1,
-                                ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text('Não tem uma conta? '),
-                                    TextButton(
-                                        onPressed: () {},
-                                        style: ButtonStyle(
-                                            shape: WidgetStateProperty.all(
-                                          const RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.all(
-                                                kGlobalBorderRadiusInternal),
-                                          ),
-                                        )),
-                                        child: const Text(
-                                          'Cadastre-se',
-                                        ))
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
+
+                      // return ValueListenableBuilder(
+                      //     valueListenable: isAuth,
+                      //     builder: (context, value, child) {
+                      //       return AnimatedSwitcher(
+                      //         duration: const Duration(milliseconds: 400),
+                      //         child: snapshot.data?.isLoading ?? true
+                      //             ? const CircularProgressIndicator(
+                      //                 key: ValueKey('Loading a'),
+                      //               )
+                      //             : const Icon(
+                      //                 Icons.lock_open_outlined,
+                      //                 size: 100,
+                      //                 key: ValueKey('Icon b'),
+                      //               ),
+
+                      //         transitionBuilder: (Widget child,
+                      //             Animation<double> animation) {
+                      //           return ScaleTransition(
+                      //             scale: animation,
+                      //             child: child,
+                      //           );
+                      //         },
+                      // const Icon(
+                      //     Icons.lock_open,
+                      //     size: 100,
+                      //     key: ValueKey('Icon b'),
+                      //   ),
+                      //   )
+                      // })
                     }
                   } else {
                     final error = snapshot.error as GlobalErrorModel;
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Scaffold.of(context).bottomSheetCustom(
                         isDismissible: true,
-                        enableDrag: false,
+                        enableDrag: true,
                         child: ErrorView(
                             title: "Error",
-                            subtitle: snapshot.error.toString(),
+                            subtitle: error.message,
                             buttons: [
                               AppOutlinedButton(
                                 "Back",
@@ -228,7 +134,109 @@ class _AuthViewState extends State<AuthView> with Validator {
                     });
                   }
 
-                  return Container();
+                  return Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          children: [
+                            const SizedBox(height: 48),
+                            const Icon(
+                              Icons.wordpress_outlined,
+                              size: 150,
+                            ),
+                            const SizedBox(height: 48),
+                            AppTextFormField(
+                                labelText: "E-Mail",
+                                controller: _userController,
+                                icon: Icons.account_circle,
+                                validador: userValidator),
+                            const SizedBox(height: 24),
+                            AppTextFormField(
+                                labelText: "Senha",
+                                controller: _passordController,
+                                isPassword: true,
+                                validador: passwordValidator),
+                            const SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: TextButton(
+                                  onPressed: () {},
+                                  style: ButtonStyle(
+                                      shape: WidgetStateProperty.all(
+                                    const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                          kGlobalBorderRadiusInternal),
+                                    ),
+                                  )),
+                                  child: const Text('Esqueci a senha',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w300))),
+                            ),
+                            const SizedBox(height: 4),
+                            AppOutlinedButton(
+                              "Entrar",
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  await widget.bloc.login(
+                                    password: _passordController.text,
+                                    eMail: _userController.text,
+                                  );
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                const Text(
+                                  "Deseja manter conectado?",
+                                ),
+                                Checkbox(
+                                    value: _stayConnected,
+                                    onChanged: (value) {
+                                      widget.bloc.stayConnected();
+                                    }),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            const Divider(
+                              height: 1,
+                              thickness: 1,
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text('Não tem uma conta? '),
+                                TextButton(
+                                    onPressed: () {
+                                      widget.bloc.navigateToRegister();
+                                    },
+                                    style: ButtonStyle(
+                                        shape: WidgetStateProperty.all(
+                                      const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            kGlobalBorderRadiusInternal),
+                                      ),
+                                    )),
+                                    child: const Text(
+                                      'Cadastre-se',
+                                    ))
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
                 }),
           ),
         ),

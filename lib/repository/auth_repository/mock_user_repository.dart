@@ -7,7 +7,7 @@ import 'iuser_repository.dart';
 
 class MockUserRepository implements IUserRepository {
   final users = <String, UserModel>{
-    "ZmVybmFuZG8=": UserModel(
+    "ZmVybmFuZG9AZmVybmFuZG8uY29t": UserModel(
       eMail: "fernando@fernando.com",
       name: 'Fernando',
       password: 'fernando',

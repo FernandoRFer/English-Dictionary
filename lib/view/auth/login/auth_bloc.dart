@@ -27,7 +27,6 @@ abstract class IAuthBloc {
 
   Future<void> dispose();
   void stayConnected();
-  Future<void> load();
 
   void navigateToRegister();
   void navigatePop();
@@ -51,31 +50,6 @@ class AuthBloc extends ChangeNotifier implements IAuthBloc {
   Future<void> dispose() async {
     await _fetchingDataController.close();
     super.dispose();
-  }
-
-  @override
-  Future<void> load() async {
-    try {
-      _fetchingDataController.add(AuthModelBloc(
-        "Loading",
-        isLoading: true,
-      ));
-      // if (await _userPreference.exists()) {
-      //   var result = await _userPreference.get();
-      //   if (result.isStayConnected) {
-      //     _navigatorApp.pushNamed(AppRoutes.home);
-      //   }
-      // }
-
-      _fetchingDataController.add(AuthModelBloc(
-        "Done",
-        isLoading: false,
-      ));
-    } catch (e) {
-      final globalError = await _globalError.errorHandling(
-          "Carreganda preferencias do usuario", e, StackTrace.current);
-      _fetchingDataController.addError(globalError);
-    }
   }
 
   @override

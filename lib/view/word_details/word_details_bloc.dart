@@ -1,5 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:english_dictionary/repository/loca_storage/history_details_word.dart';
+import 'package:english_dictionary/repository/local_storage/history_details_word.dart';
 import 'package:english_dictionary/repository/local%20_file/word_list.dart';
 import 'package:english_dictionary/repository/local_db/favorites_db.dart.dart';
 import 'package:english_dictionary/repository/model/favorites_model.dart';
